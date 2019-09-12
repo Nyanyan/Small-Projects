@@ -1,7 +1,7 @@
 import sys
 import tkinter
 
-num = 625*10**6
+num = 62*10**7
 r = 99/2
 count=0
 

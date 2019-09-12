@@ -1,10 +1,10 @@
 import sys
 import random
 
-num = 10000000
+num = 100000000
 r = 99/2
 count=0
-b = 50
+b = 200
 j=1
 for i in range(num):
     x = random.uniform(0,2*r)

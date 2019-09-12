@@ -1,7 +1,7 @@
 import sys
 import random
 
-num = 100000000
+num = 10000000
 r = 99/2
 count=0
 b = 50

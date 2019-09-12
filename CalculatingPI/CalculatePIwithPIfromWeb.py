@@ -1,7 +1,7 @@
 import sys
 import mechanize
 
-num = 250000
+num = 10000
 r = 99/2
 count=0
 
@@ -10,7 +10,7 @@ browser = mechanize.Browser()
 response = browser.open('http://www.tstcl.jp/ja/randd/pi.php')
 a = str(response.read())
 
-start = a.find('141592653589')
+start = a.find('3.')
 
 pirandom = []
 i=start
@@ -30,11 +30,12 @@ while len(pirandom)<=num*4:
         j+=1
     i+=1
 
+print('')
+
 j=1
 for i in range(num):
     x = pirandom[4*i]*10 + pirandom[4*i+1]
     y = pirandom[4*i+2]*10 + pirandom[4*i+3]
-    #print(x,y)
     if (x-r)**2 + (y-r)**2 <= r**2:
         count+=1
     if i % (num // b) == 0:

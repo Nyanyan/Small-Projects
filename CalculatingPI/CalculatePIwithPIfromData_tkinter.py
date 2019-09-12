@@ -1,7 +1,15 @@
 import sys
 import tkinter
 
-num = 625*10**6
+root = tkinter.Tk()
+root.title("モンテカルロ法")
+root.geometry("100x100")
+
+canvas = tkinter.Canvas(root, width = 100, height = 100)
+canvas.create_rectangle(0, 0, 100, 100, fill = 'gray')
+canvas.place(x=0, y=0)
+
+num = 1000
 r = 99/2
 count=0
 
@@ -23,6 +31,7 @@ while countnum<=num:
     if c == 4:
         x = pirandom[0]*10 + pirandom[1]
         y = pirandom[2]*10 + pirandom[3]
+        canvas.create_oval(x,y,x,y)
         if (x-r)**2 + (y-r)**2 <= r**2:
             count+=1
         countnum+=1
@@ -41,3 +50,5 @@ while countnum<=num:
 pi = 4 * count / num
 print('')
 print(count,num,pi)
+
+root.mainloop()

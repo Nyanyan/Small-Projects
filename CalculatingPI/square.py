@@ -1,7 +1,7 @@
 import sys
 import random
 
-num = 100000000
+num = 625*10**6
 r = 99/2
 count=0
 b = 200
@@ -9,7 +9,6 @@ j=1
 for i in range(num):
     x = random.uniform(0,2*r)
     y = random.uniform(0,2*r)
-    #print(x,y)
     if (x-r)**2 + (y-r)**2 <= r**2:
         count+=1
     if i % (num // b) == 0:

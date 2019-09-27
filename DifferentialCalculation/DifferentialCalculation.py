@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-dt = 0.1
+dt = 0.001
 x0 = 1
 v0 = 0
 a0 = -x0
@@ -23,7 +23,6 @@ for i in range(t):
     xarray.append(xarray[i] + varray[i] * dt)
     aarray.append(-xarray[i+1])
     tarray.append(tarray[i] + dt)
-    print(tarray[i+1],xarray[i+1])
 
 plt.rcParams["font.family"] = "Times New Roman" # フォントの種類
 plt.plot(tarray, xarray, '-', label="data-with-error")

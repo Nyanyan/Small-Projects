@@ -1,7 +1,7 @@
 import sys
 import random
 
-num = 625*10**6
+num = 100000000
 r = 99/2
 count=0
 b = 200

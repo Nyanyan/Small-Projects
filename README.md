@@ -16,3 +16,11 @@
 
 円周率を計算するプログラムです。
 
+### DifferentialCalculation
+
+微分方程式の数値解析をするプログラムです。
+
+### 1hChallenge
+
+https://www.softantenna.com/wp/software/5-programming-problems/
+

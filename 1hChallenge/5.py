@@ -31,14 +31,14 @@ for i in range(len(l) - 2):#演算子の数
     for j in range(len(n)):
         n[j] = list(n[j])
         n[j].append(8)
-    for j in range(len(n)): #一つの演算子配列 len(n)
+    for j in range(1): #一つの演算子配列 len(n)
         first = 0
         if len(n[j]) != 0: #最初の数字
             first = b(0,n[j][0])
         else:
             first = b(0,8)
         num = [first]
-        pm = [[0]]
+        pm = [[]]
         #print(num)
         #print(n[j])
         for k in range(len(n[j]) - 1): #一つの演算子
@@ -52,11 +52,14 @@ for i in range(len(l) - 2):#演算子の数
                     tmp = len(num)
                     for o in range(tmp):
                         num.append(num[o])
+                        pm.append(pm[o])
+                    print(n[j],num,pm)
+                    for o in range(tmp):
                         num[o] += plus
                         num[tmp + o] -= plus
-                        pm.append(pm[o])
-                        pm[o].append('+')
-                        pm[tmp + o].append('-')
+                        pm[o].append(o)
+                        #pm[tmp + o].append('-')
+                        print(n[j],o,tmp+o, num,pm)
                     break
                 elif n[j][k] <= m:
                     plus = a(m + 1, 0, 0, plus)[1]

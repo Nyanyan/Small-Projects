@@ -3,7 +3,7 @@ import itertools
 import copy
 
 l = list(range(1,10))
-cal = list(range(8))
+cal = list(range(len(l)-1))
 
 def a(i, num, n, plus):
     out = 0

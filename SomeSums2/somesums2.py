@@ -8,10 +8,14 @@
 2秒
 入力
 N A B
-入力例
+入力例1
 20 2 5
-出力例
+出力例1
 9
+入力例2
+314159265 35 89
+出力例2
+192064520
 '''
 
 import sys, re, os
@@ -45,7 +49,7 @@ n, a, b = MAP()
 l = len(str(n))
 m = [int(i) for i in str(n)]
 dp = [[[0, 0] for _ in range(b + 1)] for _ in range(l)] #dp[i桁目][各桁和がj][未満, 未満未決定]
-for j in range(b + 1):
+for j in range(m[0] + 1):
     dp[0][j][0] = 1 if j < m[0] else 0
     dp[0][j][1] = 1 if j == m[0] else 0
 for i in range(1, l):

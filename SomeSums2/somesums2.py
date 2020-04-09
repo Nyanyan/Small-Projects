@@ -1,6 +1,6 @@
 '''
 問題
-0以上N以下の整数を10進数で表した時、各桁の和がA以上B以下である数の個数を求めよ。
+0以上N以下の整数を10進数で表した時、各桁の和がA以上B以下である数の個数を10^9+7で割った余りを求めよ。
 制約
 0 <= N <= 10^30
 0 <= A <= B <= 9*(Nの桁数)
@@ -54,9 +54,10 @@ for i in range(1, l):
             dp[i][j][0] += dp[i - 1][j - k][0]
             if k < m[i]:
                 dp[i][j][0] += dp[i - 1][j - k][1]
+            dp[i][j][0] %= mod
         if dp[i - 1][j][1] and j + m[i] <= b:
             dp[i][j + m[i]][1] = 1
 for i in range(l):
     debug(dp[i])
-ans = sum([sum(i) for i in dp[l - 1][a:b + 1]])
+ans = sum([sum(i) % mod for i in dp[l - 1][a:b + 1]]) % mod
 print(ans)

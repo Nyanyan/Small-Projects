@@ -10,6 +10,7 @@ D面
 L [4, 0] [5, 0] R
 L [6, 0] [7, 0] R
         B
+
 向きは揃っている方向(白黄ステッカー)から時計回りに1, 2となる
 '''
 
@@ -19,6 +20,8 @@ from collections import deque
 move_candidate = ["U", "U2", "U'", "F", "F2", "F'", "R", "R2", "R'"] #回転の候補
 
 puzzle = [[i, 0] for i in range(8)] #パズルの状態
+
+puzzle_back = [[i, 0] for i in range(8)] #パズルの状態
 
 solved = [[i, 0] for i in range(8)]
 
@@ -57,29 +60,53 @@ def moves2num(arr):
         res.append(move_candidate.index(i))
     return res
 
+def arr2num(arr):
+    res1 = 0
+    res2 = 0
+    for i in range(8):
+        res1 *= 3 ** i
+        res1 += arr[i][0]
+    for i in range(7):
+        res2 *= 3
+        res2 += arrr[i][1]
+    return res1, res2
+
 
 scramble = list(input().split(' '))
 
-scramble_arr = moves2num(scramble)#[6, 0, 8]
+scramble_arr = moves2num(scramble)
 print('scramble:', num2moves(scramble_arr))
 puzzle = scrm(puzzle, 0)
 print('scrambled:', puzzle)
 
-que = deque([[deepcopy(puzzle), 0, []]])
+que = deque([[deepcopy(puzzle), 0, [], 0], [deepcopy(puzzle_back), 0, [], 1]])
+
+marked = [[[[] for _ in range(3 ** 7)] for _ in range(9 ** 8)] for _ in range(2)]
+
+print('start!')
 
 while len(que):
     tmp = que.popleft()
     arr = tmp[0]
     num = tmp[1]
     moves = tmp[2]
+    mode = tmp[3]
+    print(tmp)
     if arr == solved:
-        print(num2moves(moves))
-        break
-    if num < 11:
+        print(num2moves(moves), mode)
+        exit()
+    if num < 6:
         for i in range(9):
             if num != 0 and i // 3 == moves[-1] // 3:
                 continue
             n_arr = move(deepcopy(arr), i)
             n_moves = deepcopy(moves)
             n_moves.append(i)
-            que.append([n_arr, num + 1, n_moves])
+            idx1, idx2 = arr2num(n_arr)
+            marked[mode][idx1][idx2] = n_moves
+            if len(marked[(mode + 1) % 2][idx1][idx2]):
+                print(moves, marked[(mode + 1) % 2][idx1][idx2])
+                exit()
+            elif len(marked[mode][idx1][idx2]):
+                continue
+            que.append([n_arr, num + 1, n_moves, mode])

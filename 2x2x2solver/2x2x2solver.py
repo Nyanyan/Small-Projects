@@ -46,13 +46,6 @@ def scrm(n_arr, move_num):
     n_arr = scrm(n_arr, move_num + 1)
     return n_arr
 
-def digit(n, r):
-    n = str(n)
-    l = len(n)
-    for i in range(r - l):
-        n = '0' + n
-    return n
-
 def num2moves(arr):
     res = ''
     for i in arr:

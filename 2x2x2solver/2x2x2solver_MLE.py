@@ -104,16 +104,25 @@ marked[1][idx1][idx2] = [-1]
 
 print('start!')
 
-while len(que):
+flag = True
+
+fins = -1
+ans = []
+
+while flag and len(que):
     tmp = que.popleft()
     arr = tmp[0]
     num = tmp[1]
     moves = tmp[2]
     mode = tmp[3]
     if arr == solved and mode == 0:
-        print('answer', num2moves(moves), mode)
-        print(time() - strt, 's')
-        exit()
+        ans = moves
+        fins = time()
+        flag = False
+    elif arr == puzzle and mode == 1:
+        ans = reverse(moves)
+        fins = time()
+        flag = False
     if num < 6:
         for i in range(9):
             if num != 0 and i // 3 == moves[-1] // 3:
@@ -121,15 +130,33 @@ while len(que):
             n_arr = move(deepcopy(arr), i)
             n_moves = deepcopy(moves)
             n_moves.append(i)
+            if n_arr == solved and mode == 0:
+                ans = n_moves
+                fins = time()
+                flag = False
+                break
+            elif n_arr == puzzle and mode == 1:
+                ans = reverse(n_moves)
+                fins = time()
+                flag = False
+                break
             idx1, idx2 = arr2num(n_arr)
             if len(marked[(mode + 1) % 2][idx1][idx2]):
+                res = []
                 if mode == 0:
-                    print('answer', num2moves(n_moves) + num2moves(reverse(marked[(mode + 1) % 2][idx1][idx2])))
+                    res = n_moves
+                    res.extend(reverse(marked[(mode + 1) % 2][idx1][idx2]))
                 else:
-                    print('answer', num2moves(marked[(mode + 1) % 2][idx1][idx2]) + num2moves(reverse(n_moves)))
-                print(time() - strt, 's')
-                exit()
+                    res = marked[(mode + 1) % 2][idx1][idx2]
+                    res.extend(reverse(n_moves))
+                ans = res
+                fins = time()
+                flag = False
+                break
             elif len(marked[mode][idx1][idx2]):
                 continue
             marked[mode][idx1][idx2] = n_moves
             que.append([n_arr, num + 1, n_moves, mode])
+
+print(num2moves(ans))
+print(fins - strt, 's')

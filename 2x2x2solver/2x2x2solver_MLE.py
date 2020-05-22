@@ -18,6 +18,8 @@ from numpy import matrix, rot90
 from copy import deepcopy
 from collections import deque
 from math import factorial
+from time import time
+
 move_candidate = ["U", "U2", "U'", "F", "F2", "F'", "R", "R2", "R'"] #回転の候補
 
 puzzle = [[i, 0] for i in range(7)] #パズルの状態
@@ -84,6 +86,8 @@ def reverse(arr):
 
 scramble = list(input().split(' '))
 
+strt = time()
+
 scramble_arr = moves2num(scramble)
 print('scramble:', num2moves(scramble_arr))
 puzzle = scrm(puzzle, 0)
@@ -107,7 +111,8 @@ while len(que):
     moves = tmp[2]
     mode = tmp[3]
     if arr == solved and mode == 0:
-        print('a', num2moves(moves), mode)
+        print('answer', num2moves(moves), mode)
+        print(time() - strt, 's')
         exit()
     if num < 6:
         for i in range(9):
@@ -119,9 +124,10 @@ while len(que):
             idx1, idx2 = arr2num(n_arr)
             if len(marked[(mode + 1) % 2][idx1][idx2]):
                 if mode == 0:
-                    print(num2moves(n_moves) + num2moves(reverse(marked[(mode + 1) % 2][idx1][idx2])))
+                    print('answer', num2moves(n_moves) + num2moves(reverse(marked[(mode + 1) % 2][idx1][idx2])))
                 else:
-                    print(num2moves(marked[(mode + 1) % 2][idx1][idx2]) + num2moves(reverse(n_moves)))
+                    print('answer', num2moves(marked[(mode + 1) % 2][idx1][idx2]) + num2moves(reverse(n_moves)))
+                print(time() - strt, 's')
                 exit()
             elif len(marked[mode][idx1][idx2]):
                 continue

@@ -73,7 +73,7 @@ while len(que):
     num = tmp[1]
     moves = tmp[2]
     if arr == solved:
-        print(num2moves(moves))
+        print('answer:', num2moves(moves))
         break
     if num < 11:
         for i in range(9):

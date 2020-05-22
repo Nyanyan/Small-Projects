@@ -8,7 +8,7 @@ L [2, 0] [3, 0] R
 D面
         F
 L [4, 0] [5, 0] R
-L [6, 0] [7, 0] R
+L [欠番] [6, 0] R
         B
 
 向きは揃っている方向(白黄ステッカー)から時計回りに1, 2となる
@@ -17,15 +17,16 @@ L [6, 0] [7, 0] R
 from numpy import matrix, rot90
 from copy import deepcopy
 from collections import deque
+from math import factorial
 move_candidate = ["U", "U2", "U'", "F", "F2", "F'", "R", "R2", "R'"] #回転の候補
 
-puzzle = [[i, 0] for i in range(8)] #パズルの状態
+puzzle = [[i, 0] for i in range(7)] #パズルの状態
 
-puzzle_back = [[i, 0] for i in range(8)] #パズルの状態
+puzzle_back = [[i, 0] for i in range(7)] #パズルの状態
 
-solved = [[i, 0] for i in range(8)]
+solved = [[i, 0] for i in range(7)]
 
-surface = [[0, 1, 2, 3], [2, 3, 4, 5], [3, 1, 5, 7]]
+surface = [[0, 1, 2, 3], [2, 3, 4, 5], [3, 1, 5, 6]]
 
 def move(n_arr, num):
     idx = num // 3
@@ -62,15 +63,24 @@ def moves2num(arr):
 
 def arr2num(arr):
     res1 = 0
-    res2 = 0
-    for i in range(8):
-        res1 *= 3 ** i
-        res1 += arr[i][0]
+    marked = set([])
     for i in range(7):
+        res1 += factorial(6 - i) * len(set(range(arr[i][0])) - marked)
+        marked.add(arr[i][0])
+    res2 = 0
+    for i in range(6):
         res2 *= 3
-        res2 += arrr[i][1]
+        res2 += arr[i][1]
     return res1, res2
 
+def reverse(arr):
+    arr = list(reversed(arr))
+    for i in range(len(arr)):
+        if arr[i] % 3 == 0:
+            arr[i] += 2
+        elif arr[i] % 3 == 2:
+            arr[i] -= 2
+    return arr
 
 scramble = list(input().split(' '))
 
@@ -81,7 +91,12 @@ print('scrambled:', puzzle)
 
 que = deque([[deepcopy(puzzle), 0, [], 0], [deepcopy(puzzle_back), 0, [], 1]])
 
-marked = [[[[] for _ in range(3 ** 7)] for _ in range(9 ** 8)] for _ in range(2)]
+marked = [[[[] for _ in range(3 ** 6)] for _ in range(factorial(7))] for _ in range(2)]
+
+idx1, idx2 = arr2num(solved)
+marked[0][idx1][idx2] = [-1]
+idx1, idx2 = arr2num(puzzle)
+marked[1][idx1][idx2] = [-1]
 
 print('start!')
 
@@ -91,9 +106,8 @@ while len(que):
     num = tmp[1]
     moves = tmp[2]
     mode = tmp[3]
-    print(tmp)
-    if arr == solved:
-        print(num2moves(moves), mode)
+    if arr == solved and mode == 0:
+        print('a', num2moves(moves), mode)
         exit()
     if num < 6:
         for i in range(9):
@@ -103,10 +117,15 @@ while len(que):
             n_moves = deepcopy(moves)
             n_moves.append(i)
             idx1, idx2 = arr2num(n_arr)
-            marked[mode][idx1][idx2] = n_moves
+            if idx1 == 19502 and idx2 == 52:
+                print(n_arr, idx1, idx2)
             if len(marked[(mode + 1) % 2][idx1][idx2]):
-                print(moves, marked[(mode + 1) % 2][idx1][idx2])
+                if mode == 0:
+                    print('b', num2moves(n_moves) + num2moves(reverse(marked[(mode + 1) % 2][idx1][idx2])))
+                else:
+                    print('c', num2moves(marked[(mode + 1) % 2][idx1][idx2]) + num2moves(reverse(n_moves)))
                 exit()
             elif len(marked[mode][idx1][idx2]):
                 continue
+            marked[mode][idx1][idx2] = n_moves
             que.append([n_arr, num + 1, n_moves, mode])

@@ -117,13 +117,11 @@ while len(que):
             n_moves = deepcopy(moves)
             n_moves.append(i)
             idx1, idx2 = arr2num(n_arr)
-            if idx1 == 19502 and idx2 == 52:
-                print(n_arr, idx1, idx2)
             if len(marked[(mode + 1) % 2][idx1][idx2]):
                 if mode == 0:
-                    print('b', num2moves(n_moves) + num2moves(reverse(marked[(mode + 1) % 2][idx1][idx2])))
+                    print(num2moves(n_moves) + num2moves(reverse(marked[(mode + 1) % 2][idx1][idx2])))
                 else:
-                    print('c', num2moves(marked[(mode + 1) % 2][idx1][idx2]) + num2moves(reverse(n_moves)))
+                    print(num2moves(marked[(mode + 1) % 2][idx1][idx2]) + num2moves(reverse(n_moves)))
                 exit()
             elif len(marked[mode][idx1][idx2]):
                 continue

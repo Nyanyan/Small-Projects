@@ -102,8 +102,6 @@ marked[0][idx1][idx2] = [-1]
 idx1, idx2 = arr2num(puzzle)
 marked[1][idx1][idx2] = [-1]
 
-print('start!')
-
 flag = True
 
 fins = -1
@@ -158,5 +156,5 @@ while flag and len(que):
             marked[mode][idx1][idx2] = n_moves
             que.append([n_arr, num + 1, n_moves, mode])
 
-print(num2moves(ans))
+print('answer:', num2moves(ans))
 print(fins - strt, 's')

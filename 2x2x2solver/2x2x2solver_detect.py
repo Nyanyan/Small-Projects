@@ -88,18 +88,25 @@ surface = [[0, 1, 2, 3], [2, 3, 4, 5], [3, 1, 5, 6]]
 colors_low = [np.array([100, 75, 75])]
 colors_hgh = [np.array([160, 255, 255])]
 
-circle = [(0, 255, 0)]
-
 capture = cv2.VideoCapture(0)
+
 
 while(True):
     ret, frame = capture.read()
+    windowsize = (400, 300)
+    frame = cv2.resize(frame, windowsize)
     show_frame = deepcopy(frame)
-    # resize the window
-    #windowsize = (800, 600)
-    #frame = cv2.resize(frame, windowsize)
-    h,w,c = frame.shape
+    d = 50
+    center = [200, 150]
     hsv = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
+    val = [None for _ in range(4)]
+    dx = [1, 1, -1, -1]
+    dy = [1, -1, -1, 1]
+    for i in range(4):
+        val[i] = hsv[center[0] + dy[i] * d, center[1] + dx[i] * d]
+        cv2.circle(show_frame, (center[0] + dy[i] * d, center[1] + dx[i] * d), 15, (255, 255, 255), thickness=3, lineType=cv2.LINE_8, shift=0)
+    print(val)
+    '''
     ex_img = cv2.inRange(hsv,colors_low[0], colors_hgh[0])
     contours, hierarchy = cv2.findContours(ex_img,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
     areas = np.array(list(map(cv2.contourArea,contours)))
@@ -116,6 +123,7 @@ while(True):
         y = int(result["m01"]/result["m00"])
         print(x, y)
         cv2.circle(show_frame, (x, y), 15, circle[0], thickness=3, lineType=cv2.LINE_8, shift=0)
+    '''
     cv2.imshow('title',show_frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break

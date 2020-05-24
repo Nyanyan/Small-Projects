@@ -84,16 +84,45 @@ def confirm_p():
                 tmp = entry[i][j].get()
                 if tmp == '':
                     tmp = colors[i][j]
-                colors[i][j] = tmp
-                if tmp != '':
+                if tmp in j2color:
+                    colors[i][j] = tmp
                     entry[i][j]['bg'] = dic[tmp]
+                else:
+                    colors[i][j] = ''
+    for i in range(6):
+        for j in range(8):
+            if 1 < i < 4 or 1 < j < 4 and colors[i][j] == '':
+                done = False
+                for k in range(7):
+                    if [i, j] in parts_place[k]:
+                        for strt in range(3):
+                            if parts_place[k][strt] == [i, j]:
+                                idx = [colors[parts_place[k][l % 3][0]][parts_place[k][l % 3][1]] for l in range(strt + 1, strt + 3)]
+                                for strt2 in range(3):
+                                    idx1 = strt2
+                                    idx2 = (strt2 + 1) % 3
+                                    idx3 = (strt2 + 2) % 3
+                                    for l in range(7):
+                                        if parts_color[l][idx1] == idx[0] and parts_color[l][idx2] == idx[1]:
+                                            colors[i][j] = parts_color[l][idx3]
+                                            entry[i][j]['bg'] = dic[colors[i][j]]
+                                            done = True
+                                            break
+                                    if done:
+                                        break
+                                break
+                    if done:
+                        break
+    for i in range(6):
+        for j in range(8):
+            if (1 < i < 4 or 1 < j < 4) and colors[i][j] == '':
+                entry[i][j]['bg'] = 'gray'
 
 def start_p():
     strt = time()
     confirm_p()
-    parts_place = [[[0, 2], [2, 0], [2, 7]], [[0, 3], [2, 6], [2, 5]], [[1, 2], [2, 2], [2, 1]], [[1, 3], [2, 4], [2, 3]], [[4, 2], [3, 1], [3, 2]], [[4, 3], [3, 3], [3, 4]], [[5, 3], [3, 5], [3, 6]]]
-    parts_color = [set(['w', 'o', 'b']), set(['w', 'b', 'r']), set(['w', 'g', 'o']), set(['w', 'r', 'g']), set(['y', 'o', 'g']), set(['y', 'g', 'r']), set(['y', 'r', 'b'])]
     puzzle = [[i, 0] for i in range(7)]
+    set_parts_color = [set(i) for i in parts_color]
     for i in range(7):
         tmp = []
         for j in range(3):
@@ -101,7 +130,7 @@ def start_p():
         tmp1 = 'w' if 'w' in tmp else 'y'
         puzzle[i][1] = tmp.index(tmp1)
         tmp = set(tmp)
-        puzzle[i][0] = parts_color.index(tmp)
+        puzzle[i][0] = set_parts_color.index(tmp)
 
     solved = [[i, 0] for i in range(7)]
     que = deque([[deepcopy(puzzle), 0, [], 0], [[[i, 0] for i in range(7)], 0, [], 1]])
@@ -173,16 +202,19 @@ surface = [[0, 1, 2, 3], [2, 3, 4, 5], [3, 1, 5, 6]]
 
 colors = [['' for _ in range(8)] for _ in range(6)]
 
-capture = cv2.VideoCapture(2)
+#capture = cv2.VideoCapture(1)
 
 #color: white, green, red, blue, orange, yellow
-color_low = [[50, 50, 50],   [140, 50, 50],   [80, 50, 50],    [0, 50, 50],    [20, 50, 50],   [0, 0, 50]]
-color_hgh = [[80, 255, 255], [179, 100, 150], [140, 100, 150], [20, 100, 150], [50, 255, 255], [179, 50, 255]]
+#color_low = [[50, 50, 50],   [140, 50, 50],   [80, 50, 50],    [0, 50, 50],    [20, 50, 50],   [0, 0, 50]]
+#color_hgh = [[80, 255, 255], [179, 100, 150], [140, 100, 150], [20, 100, 150], [50, 255, 255], [179, 50, 255]]
 j2color = ['g', 'r', 'b', 'o', 'y', 'w']
-surfacenum = [[[0, 2], [0, 3], [1, 2], [1, 3]], [[2, 2], [2, 3], [3, 2], [3, 3]], [[2, 4], [2, 5], [3, 4], [3, 5]], [[2, 6], [2, 7], [3, 6], [3, 7]], [[2, 0], [2, 1], [3, 0], [3, 1]], [[4, 2], [4, 3], [5, 2], [5, 3]]]
+#surfacenum = [[[0, 2], [0, 3], [1, 2], [1, 3]], [[2, 2], [2, 3], [3, 2], [3, 3]], [[2, 4], [2, 5], [3, 4], [3, 5]], [[2, 6], [2, 7], [3, 6], [3, 7]], [[2, 0], [2, 1], [3, 0], [3, 1]], [[4, 2], [4, 3], [5, 2], [5, 3]]]
 
-circlecolor = [(255, 0, 0), (0, 0, 255), (0, 255, 0), (100, 0, 255), (255, 0, 255), (255, 255, 255)]
+#circlecolor = [(0, 255, 0), (255, 0, 0), (0, 0, 255), (255, 100, 0), (255, 255, 0), (255, 255, 255)]
 
+parts_place = [[[0, 2], [2, 0], [2, 7]], [[0, 3], [2, 6], [2, 5]], [[1, 2], [2, 2], [2, 1]], [[1, 3], [2, 4], [2, 3]], [[4, 2], [3, 1], [3, 2]], [[4, 3], [3, 3], [3, 4]], [[5, 3], [3, 5], [3, 6]]]
+parts_color = [['w', 'o', 'b'], ['w', 'b', 'r'], ['w', 'g', 'o'], ['w', 'r', 'g'], ['y', 'o', 'g'], ['y', 'g', 'r'], ['y', 'r', 'b']]
+'''
 idx = 0
 while True:
     if idx >= 6:
@@ -194,14 +226,14 @@ while True:
     d = 70
     center = [200, 150]
     hsv = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
-    hsv[:,:,(1)] = hsv[:,:,(1)] * 1.5
+    #hsv[:,:,(1)] = hsv[:,:,(1)] * 1.5
     val = [None for _ in range(4)]
     dx = [-1, 1, -1, 1]
     dy = [-1, -1, 1, 1]
     for i in range(4):
         y = center[0] + dy[i] * d
         x = center[1] + dx[i] * d
-        cv2.circle(show_frame, (y, x), 5, (0, 0, 0), thickness=1, lineType=cv2.LINE_8, shift=0)
+        cv2.circle(show_frame, (y, x), 5, (0, 0, 0), thickness=3, lineType=cv2.LINE_8, shift=0)
         val[i] = hsv[y, x]
         for j in range(6):
             flag = True
@@ -222,28 +254,29 @@ while True:
 print(colors)
 
 capture.release()
-
+'''
 
 
 #scramble = list(input().split(' '))
 root = tkinter.Tk()
 root.title("2x2x2solver")
-root.geometry("400x300")
-canvas = tkinter.Canvas(root, width = 400, height = 300)
+root.geometry("300x200")
+canvas = tkinter.Canvas(root, width = 300, height = 200)
 canvas.place(x=0,y=0)
 
-grid = 50
+grid = 20
+
+offset = 50
 
 entry = [[None for _ in range(8)] for _ in range(6)]
 
-dic = {'w':'gray', 'g':'green', 'r':'red', 'b':'blue', 'o':'magenta', 'y':'yellow'}
+dic = {'w':'white', 'g':'green', 'r':'red', 'b':'blue', 'o':'magenta', 'y':'yellow'}
 
 for i in range(6):
     for j in range(8):
         if 1 < i < 4 or 1 < j < 4:
-            canvas.create_rectangle(j * grid, i * grid, (j + 1) * grid, (i + 1) * grid, fill = 'gray')
-            entry[i][j] = tkinter.Entry(width=2)
-            entry[i][j].place(x = j * grid, y = i * grid)
+            entry[i][j] = tkinter.Entry(width=2, bg='gray')
+            entry[i][j].place(x = j * grid + offset, y = i * grid + offset)
 
 confirm = tkinter.Button(canvas, text="confirm", command=confirm_p)
 confirm.pack()

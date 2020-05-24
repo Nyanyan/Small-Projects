@@ -80,10 +80,9 @@ def confirm_p():
     global colors
     for i in range(6):
         for j in range(8):
+            colors[i][j] = ''
             if 1 < i < 4 or 1 < j < 4:
                 tmp = entry[i][j].get()
-                if tmp == '':
-                    tmp = colors[i][j]
                 if tmp in j2color:
                     colors[i][j] = tmp
                     entry[i][j]['bg'] = dic[tmp]

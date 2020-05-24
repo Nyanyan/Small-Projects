@@ -22,6 +22,7 @@ import tkinter
 import cv2
 import numpy as np
 
+# 回転番号に則って実際にパズルの状態配列を変化させる
 def move(n_arr, num):
     idx = num // 3
     rot_arr1 = np.matrix([[n_arr[surface[idx][i]][0] for i in range(j * 2, j * 2 + 2)] for j in range(2)])
@@ -36,6 +37,7 @@ def move(n_arr, num):
         n_arr[surface[idx][i]][1] = rot_arr2[i // 2][i % 2]
     return n_arr
 
+# スクランブルする 使用されていない
 def scrm(n_arr, move_num):
     if len(scramble_arr) == move_num:
         return n_arr
@@ -43,18 +45,21 @@ def scrm(n_arr, move_num):
     n_arr = scrm(n_arr, move_num + 1)
     return n_arr
 
+# 回転番号を回転記号に変換
 def num2moves(arr):
     res = ''
     for i in arr:
         res += move_candidate[i] + ' '
     return res
 
+# 回転記号を回転番号に変換 使用されていない
 def moves2num(arr):
     res = []
     for i in arr:
         res.append(move_candidate.index(i))
     return res
 
+# パズルの状態配列固有の番号を返す
 def arr2num(arr):
     res1 = 0
     marked = set([])
@@ -67,6 +72,7 @@ def arr2num(arr):
         res2 += arr[i][1]
     return res1, res2
 
+# 逆手順を返す
 def reverse(arr):
     arr = list(reversed(arr))
     for i in range(len(arr)):
@@ -76,8 +82,11 @@ def reverse(arr):
             arr[i] -= 2
     return arr
 
+# ボックスから色の情報を取ってくる
 def confirm_p():
     global colors
+
+    # ボックスから色の情報を取る
     for i in range(6):
         for j in range(8):
             colors[i][j] = ''
@@ -88,6 +97,8 @@ def confirm_p():
                     entry[i][j]['bg'] = dic[tmp]
                 else:
                     colors[i][j] = ''
+    
+    # 埋まっていないところで色が確定するところを埋める
     for i in range(6):
         for j in range(8):
             if (1 < i < 4 or 1 < j < 4) and colors[i][j] == '':
@@ -112,13 +123,18 @@ def confirm_p():
                                 break
                     if done:
                         break
+    
+    # 埋まっていないところの背景色をgrayに
     for i in range(6):
         for j in range(8):
             if (1 < i < 4 or 1 < j < 4) and colors[i][j] == '':
                 entry[i][j]['bg'] = 'gray'
 
+# メイン処理
 def start_p():
     strt = time()
+    
+    # 色の情報からパズルの状態配列を作る
     confirm_p()
     puzzle = [[i, 0] for i in range(7)]
     set_parts_color = [set(i) for i in parts_color]
@@ -139,6 +155,7 @@ def start_p():
         print(colors[i])
     print(puzzle)
 
+    # パズルの向きから、solved状態の配列を作る
     solved_color = [['' for _ in range(8)] for _ in range(6)]
     solved_color[5][2] = colors[5][2]
     solved_color[3][7] = colors[3][7]
@@ -183,18 +200,16 @@ def start_p():
         print(solved_color[i])
     print(solved)
 
+    # 双方向幅優先探索
     que = deque([[deepcopy(puzzle), 0, [], 0], [deepcopy(solved), 0, [], 1]])
     marked = [[[[] for _ in range(3 ** 6)] for _ in range(factorial(7))] for _ in range(2)]
     idx1, idx2 = arr2num(solved)
     marked[0][idx1][idx2] = [-1]
     idx1, idx2 = arr2num(puzzle)
     marked[1][idx1][idx2] = [-1]
-
     flag = True
-
     fins = -1
     ans = []
-
     while flag and len(que):
         tmp = que.popleft()
         arr = tmp[0]
@@ -264,6 +279,7 @@ j2color = ['g', 'b', 'r', 'o', 'y', 'w']
 parts_place = [[[0, 2], [2, 0], [2, 7]], [[0, 3], [2, 6], [2, 5]], [[1, 2], [2, 2], [2, 1]], [[1, 3], [2, 4], [2, 3]], [[4, 2], [3, 1], [3, 2]], [[4, 3], [3, 3], [3, 4]], [[5, 3], [3, 5], [3, 6]], [[5, 2], [3, 7], [3, 0]]]
 parts_color = [['w', 'o', 'b'], ['w', 'b', 'r'], ['w', 'g', 'o'], ['w', 'r', 'g'], ['y', 'o', 'g'], ['y', 'g', 'r'], ['y', 'r', 'b'], ['y', 'b', 'o']]
 '''
+# カメラでパズルの色を取ってくる試み ボツ
 idx = 0
 while True:
     if idx >= 6:

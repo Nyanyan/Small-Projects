@@ -91,9 +91,9 @@ def confirm_p():
                     colors[i][j] = ''
     for i in range(6):
         for j in range(8):
-            if 1 < i < 4 or 1 < j < 4 and colors[i][j] == '':
+            if (1 < i < 4 or 1 < j < 4) and colors[i][j] == '':
                 done = False
-                for k in range(7):
+                for k in range(8):
                     if [i, j] in parts_place[k]:
                         for strt in range(3):
                             if parts_place[k][strt] == [i, j]:
@@ -102,7 +102,7 @@ def confirm_p():
                                     idx1 = strt2
                                     idx2 = (strt2 + 1) % 3
                                     idx3 = (strt2 + 2) % 3
-                                    for l in range(7):
+                                    for l in range(8):
                                         if parts_color[l][idx1] == idx[0] and parts_color[l][idx2] == idx[1]:
                                             colors[i][j] = parts_color[l][idx3]
                                             entry[i][j]['bg'] = dic[colors[i][j]]
@@ -129,13 +129,63 @@ def start_p():
             tmp.append(colors[parts_place[i][j][0]][parts_place[i][j][1]])
         tmp1 = 'w' if 'w' in tmp else 'y'
         puzzle[i][1] = tmp.index(tmp1)
-        tmp = set(tmp)
-        puzzle[i][0] = set_parts_color.index(tmp)
+        puzzle[i][0] = set_parts_color.index(set(tmp))
+    tmp = [puzzle[i][0] for i in range(7)]
+    tmp2 = list(set(range(7)) - set(tmp))[0]
+    for i in range(7):
+        if puzzle[i][0] > tmp2:
+            puzzle[i][0] -= 1
+    print('scramble:')
+    for i in range(6):
+        print(colors[i])
+    print(puzzle)
 
-    solved = [[i, 0] for i in range(7)]
-    que = deque([[deepcopy(puzzle), 0, [], 0], [[[i, 0] for i in range(7)], 0, [], 1]])
+    solved_color = [['' for _ in range(8)] for _ in range(6)]
+    solved_color[5][2] = colors[5][2]
+    solved_color[3][7] = colors[3][7]
+    solved_color[3][0] = colors[3][0]
+    solved_color[2][2] = j2color[(j2color.index(solved_color[3][7]) // 2) * 2 - j2color.index(solved_color[3][7]) % 2 + 1]
+    solved_color[3][4] = j2color[(j2color.index(solved_color[3][0]) // 2) * 2 - j2color.index(solved_color[3][0]) % 2 + 1]
+    solved_color[0][2] = j2color[(j2color.index(solved_color[5][2]) // 2) * 2 - j2color.index(solved_color[5][2]) % 2 + 1]
+    for i in range(6):
+        for j in range(8):
+            if (1 < i < 4 or 1 < j < 4) and solved_color[i][j] == '':
+                if i % 2 and j % 2:
+                    dx = [0, -1, -1]
+                    dy = [-1, -1, 0]
+                elif i % 2 and (not j % 2):
+                    dx = [0, 1, 1]
+                    dy = [-1, -1, 0]
+                elif (not i % 2) and j % 2:
+                    dx = [-1, -1, 0]
+                    dy = [0, 1, 1]
+                elif (not i % 2) and (not j % 2):
+                    dx = [1, 1, 0]
+                    dy = [0, 1, 1]
+                #print(i, j, dx, dy)
+                for k in range(3):
+                    if solved_color[i + dy[k]][j + dx[k]] != '':
+                        solved_color[i][j] = solved_color[i + dy[k]][j + dx[k]]
+    solved = [[-1, -1] for _ in range(7)]
+    for i in range(7):
+        tmp = []
+        for j in range(3):
+            tmp.append(solved_color[parts_place[i][j][0]][parts_place[i][j][1]])
+        tmp1 = 'w' if 'w' in tmp else 'y'
+        solved[i][1] = tmp.index(tmp1)
+        solved[i][0] = set_parts_color.index(set(tmp))
+    tmp = [solved[i][0] for i in range(7)]
+    tmp2 = list(set(range(7)) - set(tmp))[0]
+    for i in range(7):
+        if solved[i][0] > tmp2:
+            solved[i][0] -= 1
+    print('solved:')
+    for i in range(6):
+        print(solved_color[i])
+    print(solved)
+
+    que = deque([[deepcopy(puzzle), 0, [], 0], [deepcopy(solved), 0, [], 1]])
     marked = [[[[] for _ in range(3 ** 6)] for _ in range(factorial(7))] for _ in range(2)]
-
     idx1, idx2 = arr2num(solved)
     marked[0][idx1][idx2] = [-1]
     idx1, idx2 = arr2num(puzzle)
@@ -207,13 +257,13 @@ colors = [['' for _ in range(8)] for _ in range(6)]
 #color: white, green, red, blue, orange, yellow
 #color_low = [[50, 50, 50],   [140, 50, 50],   [80, 50, 50],    [0, 50, 50],    [20, 50, 50],   [0, 0, 50]]
 #color_hgh = [[80, 255, 255], [179, 100, 150], [140, 100, 150], [20, 100, 150], [50, 255, 255], [179, 50, 255]]
-j2color = ['g', 'r', 'b', 'o', 'y', 'w']
+j2color = ['g', 'b', 'r', 'o', 'y', 'w']
 #surfacenum = [[[0, 2], [0, 3], [1, 2], [1, 3]], [[2, 2], [2, 3], [3, 2], [3, 3]], [[2, 4], [2, 5], [3, 4], [3, 5]], [[2, 6], [2, 7], [3, 6], [3, 7]], [[2, 0], [2, 1], [3, 0], [3, 1]], [[4, 2], [4, 3], [5, 2], [5, 3]]]
 
 #circlecolor = [(0, 255, 0), (255, 0, 0), (0, 0, 255), (255, 100, 0), (255, 255, 0), (255, 255, 255)]
 
-parts_place = [[[0, 2], [2, 0], [2, 7]], [[0, 3], [2, 6], [2, 5]], [[1, 2], [2, 2], [2, 1]], [[1, 3], [2, 4], [2, 3]], [[4, 2], [3, 1], [3, 2]], [[4, 3], [3, 3], [3, 4]], [[5, 3], [3, 5], [3, 6]]]
-parts_color = [['w', 'o', 'b'], ['w', 'b', 'r'], ['w', 'g', 'o'], ['w', 'r', 'g'], ['y', 'o', 'g'], ['y', 'g', 'r'], ['y', 'r', 'b']]
+parts_place = [[[0, 2], [2, 0], [2, 7]], [[0, 3], [2, 6], [2, 5]], [[1, 2], [2, 2], [2, 1]], [[1, 3], [2, 4], [2, 3]], [[4, 2], [3, 1], [3, 2]], [[4, 3], [3, 3], [3, 4]], [[5, 3], [3, 5], [3, 6]], [[5, 2], [3, 7], [3, 0]]]
+parts_color = [['w', 'o', 'b'], ['w', 'b', 'r'], ['w', 'g', 'o'], ['w', 'r', 'g'], ['y', 'o', 'g'], ['y', 'g', 'r'], ['y', 'r', 'b'], ['y', 'b', 'o']]
 '''
 idx = 0
 while True:

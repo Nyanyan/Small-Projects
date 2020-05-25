@@ -89,9 +89,10 @@ def confirm_p():
     # ボックスから色の情報を取る
     for i in range(6):
         for j in range(8):
-            colors[i][j] = ''
+            #colors[i][j] = ''
             if 1 < i < 4 or 1 < j < 4:
-                tmp = entry[i][j].get()
+                #tmp = entry[i][j].get()
+                tmp = colors[i][j]
                 if tmp in j2color:
                     colors[i][j] = tmp
                     entry[i][j]['bg'] = dic[tmp]
@@ -270,60 +271,12 @@ surface = [[0, 1, 2, 3], [2, 3, 4, 5], [3, 1, 5, 6]]
 
 colors = [['' for _ in range(8)] for _ in range(6)]
 
-#capture = cv2.VideoCapture(1)
 
-#color: white, green, red, blue, orange, yellow
-#color_low = [[50, 50, 50],   [140, 50, 50],   [80, 50, 50],    [0, 50, 50],    [20, 50, 50],   [0, 0, 50]]
-#color_hgh = [[80, 255, 255], [179, 100, 150], [140, 100, 150], [20, 100, 150], [50, 255, 255], [179, 50, 255]]
 j2color = ['g', 'b', 'r', 'o', 'y', 'w']
-#surfacenum = [[[0, 2], [0, 3], [1, 2], [1, 3]], [[2, 2], [2, 3], [3, 2], [3, 3]], [[2, 4], [2, 5], [3, 4], [3, 5]], [[2, 6], [2, 7], [3, 6], [3, 7]], [[2, 0], [2, 1], [3, 0], [3, 1]], [[4, 2], [4, 3], [5, 2], [5, 3]]]
 
-#circlecolor = [(0, 255, 0), (255, 0, 0), (0, 0, 255), (255, 100, 0), (255, 255, 0), (255, 255, 255)]
 
 parts_place = [[[0, 2], [2, 0], [2, 7]], [[0, 3], [2, 6], [2, 5]], [[1, 2], [2, 2], [2, 1]], [[1, 3], [2, 4], [2, 3]], [[4, 2], [3, 1], [3, 2]], [[4, 3], [3, 3], [3, 4]], [[5, 3], [3, 5], [3, 6]], [[5, 2], [3, 7], [3, 0]]]
 parts_color = [['w', 'o', 'b'], ['w', 'b', 'r'], ['w', 'g', 'o'], ['w', 'r', 'g'], ['y', 'o', 'g'], ['y', 'g', 'r'], ['y', 'r', 'b'], ['y', 'b', 'o']]
-'''
-# カメラでパズルの色を取ってくる試み ボツ
-idx = 0
-while True:
-    if idx >= 6:
-        break
-    ret, frame = capture.read()
-    windowsize = (400, 300)
-    frame = cv2.resize(frame, windowsize)
-    show_frame = deepcopy(frame)
-    d = 70
-    center = [200, 150]
-    hsv = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
-    #hsv[:,:,(1)] = hsv[:,:,(1)] * 1.5
-    val = [None for _ in range(4)]
-    dx = [-1, 1, -1, 1]
-    dy = [-1, -1, 1, 1]
-    for i in range(4):
-        y = center[0] + dy[i] * d
-        x = center[1] + dx[i] * d
-        cv2.circle(show_frame, (y, x), 5, (0, 0, 0), thickness=3, lineType=cv2.LINE_8, shift=0)
-        val[i] = hsv[y, x]
-        for j in range(6):
-            flag = True
-            for k in range(3):
-                if not(color_low[j][k] <= val[i][k] < color_hgh[j][k]):
-                    flag = False
-            if flag:
-                colors[surfacenum[idx][i][0]][surfacenum[idx][i][1]] = j2color[j]
-                cv2.circle(show_frame, (y, x), 15, circlecolor[j], thickness=3, lineType=cv2.LINE_8, shift=0)
-                break
-    if cv2.waitKey(1) & 0xFF == ord('n'):
-        print(idx)
-        idx += 1
-    cv2.imshow('title',show_frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-print(colors)
-
-capture.release()
-'''
 
 
 #scramble = list(input().split(' '))
@@ -353,4 +306,67 @@ confirm.pack()
 start = tkinter.Button(canvas, text="start", command=start_p)
 start.pack()
 
+
+# カメラでパズルの色を取ってくる
+capture = cv2.VideoCapture(0)
+surfacenum = [[[2, 0], [2, 1], [3, 0], [3, 1]], [[2, 2], [2, 3], [3, 2], [3, 3]], [[2, 4], [2, 5], [3, 4], [3, 5]], [[2, 6], [2, 7], [3, 6], [3, 7]]] #[[0, 2], [0, 3], [1, 2], [1, 3]], [[4, 2], [4, 3], [5, 2], [5, 3]]
+#j2color = ['g', 'b', 'r', 'o', 'y', 'w']
+color_low = [[50, 50, 50],   [80, 50, 50],    [160, 100, 50], [0, 50, 50],   [20, 50, 50],   [0, 0, 50]]
+color_hgh = [[80, 255, 255], [140, 255, 255], [10, 255, 200], [20, 255, 255], [40, 255, 255], [179, 50, 255]]
+circlecolor = [(0, 255, 0), (255, 0, 0), (0, 0, 255), (0, 170, 255), (0, 255, 255), (255, 255, 255)]
+idx = 0
+
+def detect():
+    global idx, colors
+    if idx >= 4:
+        return
+    ret, frame = capture.read()
+    size_x = 400
+    size_y = 300
+    windowsize = (size_x, size_y)
+    frame = cv2.resize(frame, windowsize)
+    show_frame = deepcopy(frame)
+    d = 70
+    center = [size_x // 2, size_y // 2]
+    tmp_colors = [['' for _ in range(8)] for _ in range(6)]
+    hsv = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
+    dx = [-1, -1, 1, 1]
+    dy = [-1, 1, -1, 1]
+    for i in range(4):
+        y = center[0] + dy[i] * d
+        x = center[1] + dx[i] * d
+        cv2.circle(show_frame, (y, x), 5, (0, 0, 0), thickness=3, lineType=cv2.LINE_8, shift=0)
+        val = hsv[x, y]
+        #print(val, end='')
+        for j in range(6):
+            flag = True
+            for k in range(3):
+                if not ((color_low[j][k] < color_hgh[j][k] and color_low[j][k] <= val[k] <= color_hgh[j][k]) or (color_low[j][k] > color_hgh[j][k] and (color_low[j][k] <= val[k] or val[k] <= color_hgh[j][k]))):
+                    flag = False
+            if flag:
+                tmp_colors[surfacenum[idx][i][0]][surfacenum[idx][i][1]] = j2color[j]
+                #print(j2color[j], end=' ')
+                cv2.circle(show_frame, (y, x), 15, circlecolor[j], thickness=3, lineType=cv2.LINE_8, shift=0)
+                break
+    #print('')
+    if cv2.waitKey(1) & 0xFF == ord('n'):
+        for i in range(4):
+            colors[surfacenum[idx][i][0]][surfacenum[idx][i][1]] = tmp_colors[surfacenum[idx][i][0]][surfacenum[idx][i][1]]
+        print(idx)
+        idx += 1
+        confirm_p()
+        for i in range(6):
+            print(tmp_colors[i])
+        print('')
+        for i in range(6):
+            print(colors[i])
+        print('')
+    cv2.imshow('title',show_frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        return
+    root.after(5, detect)
+
+root.after(5, detect)
 root.mainloop()
+
+capture.release()

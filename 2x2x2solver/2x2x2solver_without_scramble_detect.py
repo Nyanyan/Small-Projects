@@ -146,10 +146,12 @@ def start_p():
         puzzle[i][1] = tmp.index(tmp1)
         puzzle[i][0] = set_parts_color.index(set(tmp))
     tmp = [puzzle[i][0] for i in range(7)]
-    tmp2 = list(set(range(7)) - set(tmp))[0]
-    for i in range(7):
-        if puzzle[i][0] > tmp2:
-            puzzle[i][0] -= 1
+    tmp2 = list(set(range(7)) - set(tmp))
+    if len(tmp2):
+        tmp2 = tmp2[0]
+        for i in range(7):
+            if puzzle[i][0] > tmp2:
+                puzzle[i][0] -= 1
     print('scramble:')
     for i in range(6):
         print(colors[i])
@@ -191,10 +193,12 @@ def start_p():
         solved[i][1] = tmp.index(tmp1)
         solved[i][0] = set_parts_color.index(set(tmp))
     tmp = [solved[i][0] for i in range(7)]
-    tmp2 = list(set(range(7)) - set(tmp))[0]
-    for i in range(7):
-        if solved[i][0] > tmp2:
-            solved[i][0] -= 1
+    tmp2 = list(set(range(7)) - set(tmp))
+    if len(tmp2):
+        tmp2 = tmp2[0]
+        for i in range(7):
+            if solved[i][0] > tmp2:
+                solved[i][0] -= 1
     print('solved:')
     for i in range(6):
         print(solved_color[i])
